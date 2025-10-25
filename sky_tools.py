@@ -26,7 +26,7 @@ def get_positions(lat, lon):
     t = ts.now()
 
     # Load planetary data
-    planets = load('de421.bsp')
+    planets = load('de440s.bsp')
 
     # Define observer position properly
     observer = planets['earth'] + wgs84.latlon(lat, lon)
