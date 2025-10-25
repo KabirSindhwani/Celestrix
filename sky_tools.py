@@ -19,26 +19,36 @@ def _load_ephem():
         _TS = load.timescale()
     return _EPHEMERIS, _TS
 
+from skyfield.api import load, wgs84
+
 def get_positions(lat, lon):
-    """Return alt/az for some bodies at current time for observer lat/lon (decimal degrees).
-    Returns dict: { 'Sun': {'alt':..,'az':..}, ... }
-    """
-    eph, ts = _load_ephem()
+    ts = load.timescale()
     t = ts.now()
-    earth = eph['earth']
+
+    # Load planetary data
+    planets = load('de421.bsp')
+
+    # Define observer position properly
+    observer = planets['earth'] + wgs84.latlon(lat, lon)
+
     bodies = {
-        'Sun': eph['sun'],
-        'Moon': eph['moon'],
-        'Mars': eph['mars'],
-        'Jupiter': eph['jupiter barycenter']
+        "Sun": planets["sun"],
+        "Moon": planets["moon"],
+        "Mars": planets["mars"],
+        "Jupiter": planets["jupiter"],
+        "Saturn": planets["saturn"]
     }
-    observer = earth + Topos(latitude_degrees=lat, longitude_degrees=lon)
-    out = {}
+
+    positions = {}
     for name, body in bodies.items():
         astrometric = observer.observe(body).apparent()
-        alt, az, _ = astrometric.altaz()
-        out[name] = {'alt': float(alt.degrees), 'az': float(az.degrees)}
-    return out
+        alt, az, distance = astrometric.altaz()
+        positions[name] = {
+            "altitude": alt.degrees,
+            "azimuth": az.degrees
+        }
+
+    return positions
 
 def plot_sky(data):
     """Plot a simple polar sky map (Matplotlib Figure). Returns BytesIO of PNG and the matplotlib Figure."""
