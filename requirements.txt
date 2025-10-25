@@ -1,6 +1,8 @@
-streamlit==1.30.0
-skyfield==1.46
-matplotlib==3.7.1
-requests==2.31.0
-pytz==2024.1
-numpy==1.26.0
+streamlit>=1.35.0
+skyfield
+matplotlib
+numpy
+pandas
+plotly
+requests
+pytz
